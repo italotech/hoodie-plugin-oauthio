@@ -1,0 +1,32 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mocha Tests</title>
+  <link rel="stylesheet" href="mocha.css" />
+</head>
+<body>
+  <div id="mocha"></div>
+  <script src="mocha.js"></script>
+  <script src="chai.js"></script>
+  <script>
+    mocha.ui('tdd');
+    mocha.reporter('html');
+    assert = chai.assert;
+  </script>
+  <script>
+
+    suite('example', function () {
+      test('do stuff', function () {
+        assert.equal(1, 2);
+      });
+    });
+
+    if (window.mochaPhantomJS) {
+      mochaPhantomJS.run();
+    }
+    else {
+      mocha.run();
+    }
+  </script>
+</body>
+</html>

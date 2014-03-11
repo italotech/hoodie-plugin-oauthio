@@ -1,0 +1,19 @@
+{
+  "name": "hoodie-plugin-template",
+  "version": "1.0.0",
+  "description": "Basic Hoodie plugin layout",
+  "devDependencies": {
+    "mocha": "~1.17.1",
+    "chai": "~1.9.0",
+    "grunt": "^0.4.3",
+    "grunt-shell": "^0.6.4",
+    "grunt-mocha-browser": "0.0.4",
+    "grunt-hoodie": "git://github.com/caolan/grunt-hoodie.git#stop-task",
+    "grunt-continue": "0.0.1",
+    "hoodie-server": "^0.9.19"
+  },
+  "dependencies": {},
+  "hoodie": {
+    "plugins": []
+  }
+}
