@@ -21,16 +21,13 @@ module.exports = function (grunt) {
         },
         removePlugin: {
           command: 'hoodie uninstall template'
-        }/*,
-        hoodieStart: {
-          command: 'hoodie start --nobrowser --www test'
-        }*/
+        }
       },
 
       hoodie: {
         start: {
           options: {
-            www: 'test',
+            www: 'test/browser',
             callback: function (config) {
               grunt.config.set('connect.options.port', config.stack.www.port);
             }
