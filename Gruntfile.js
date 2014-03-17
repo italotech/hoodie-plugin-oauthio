@@ -5,6 +5,17 @@ module.exports = function (grunt) {
 
     pkg: grunt.file.readJSON('package.json'),
 
+    jshint: {
+      files: [
+        'Gruntfile.js',
+        'hoodie.template.js',
+        'worker.js'
+      ],
+      options: {
+        jshintrc: '.jshintrc'
+      }
+    },
+
     simplemocha: {
       options: {
         ui: 'exports'
@@ -46,14 +57,16 @@ module.exports = function (grunt) {
 
   });
 
+  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mocha-browser');
+  grunt.loadNpmTasks('grunt-simple-mocha');
   grunt.loadNpmTasks('grunt-continue');
   grunt.loadNpmTasks('grunt-hoodie');
-  grunt.loadNpmTasks('grunt-simple-mocha');
   grunt.loadNpmTasks('grunt-shell');
 
   grunt.registerTask('default', []);
   grunt.registerTask('test', [
+    'jshint',
     'simplemocha:unit',
     'shell:npmLink',
     'shell:installPlugin',
