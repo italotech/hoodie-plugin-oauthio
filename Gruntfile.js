@@ -74,11 +74,9 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-env');
 
-  grunt.registerTask('default', []);
-  grunt.registerTask('test', [
+  grunt.registerTask('test:unit', ['simplemocha:unit']);
+  grunt.registerTask('test:browser', [
     'env:test',
-    'jshint',
-    'simplemocha:unit',
     'shell:removeData',
     'shell:npmLink',
     'shell:installPlugin',
@@ -89,6 +87,13 @@ module.exports = function (grunt) {
     'hoodie_stop',
     'shell:npmUnlink',
     'shell:removePlugin'
+  ]);
+
+  grunt.registerTask('default', []);
+  grunt.registerTask('test', [
+    'jshint',
+    'test:unit',
+    'test:browser'
   ]);
 
 };
