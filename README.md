@@ -6,15 +6,25 @@ a Hoodie server.
 
 You'll need to have phantomjs and grunt installed:
 
-```js
+```
 npm install -g phantomjs grunt-cli
 ```
 
-## To run all tests / linting
+## To run tests / linting
+
+Install dev dependencies:
+
+```
+npm install
+```
+
+Then run the 'test' task
 
 ```
 grunt test
 ```
+
+You can also run `test:unit` or `test:browser` individually.
 
 If your plugin depends on other plugins being present (usually it will at
 least depend on the hoodie users plugin), then make sure they're included
