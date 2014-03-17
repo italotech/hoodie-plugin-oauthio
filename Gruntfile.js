@@ -5,6 +5,15 @@ module.exports = function (grunt) {
 
       pkg: grunt.file.readJSON('package.json'),
 
+      simplemocha: {
+          options: {
+              ui: 'exports'
+          },
+          unit: {
+              src: ['test/unit/example.js']
+          }
+      },
+
       mocha_browser: {
           all: {options: {urls: ['http://localhost:<%= connect.options.port %>']}}
       },
@@ -40,10 +49,12 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-mocha-browser');
     grunt.loadNpmTasks('grunt-continue');
     grunt.loadNpmTasks('grunt-hoodie');
+    grunt.loadNpmTasks('grunt-simple-mocha');
     grunt.loadNpmTasks('grunt-shell');
 
     grunt.registerTask('default', []);
     grunt.registerTask('test', [
+        'simplemocha:unit',
         'shell:npmLink',
         'shell:installPlugin',
         'hoodie',

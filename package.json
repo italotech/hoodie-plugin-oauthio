@@ -10,7 +10,8 @@
     "grunt-mocha-browser": "0.0.4",
     "grunt-hoodie": "git://github.com/caolan/grunt-hoodie.git#stop-task",
     "grunt-continue": "0.0.1",
-    "hoodie-server": "^0.9.19"
+    "hoodie-server": "^0.9.19",
+    "grunt-simple-mocha": "^0.4.0"
   },
   "dependencies": {},
   "hoodie": {
