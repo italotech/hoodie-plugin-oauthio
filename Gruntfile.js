@@ -62,11 +62,23 @@ module.exports = function (grunt) {
       test: {
         HOODIE_SETUP_PASSWORD: 'testing'
       }
+    },
+
+    watch: {
+      jshint: {
+        files: ['<%= jshint.files %>'],
+        tasks: 'jshint'
+      },
+      unittest: {
+        files: 'worker.js',
+        tasks: 'test:unit'
+      }
     }
 
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-mocha-browser');
   grunt.loadNpmTasks('grunt-simple-mocha');
   grunt.loadNpmTasks('grunt-continue');
