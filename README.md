@@ -4,6 +4,12 @@ This is a template layout for a Hoodie plugin. It contains a Gruntfile with
 appropriate tasks for running jshint, unit tests and browser tests against
 a Hoodie server.
 
+You'll need to have phantomjs and grunt installed:
+
+```js
+npm install -g phantomjs grunt-cli
+```
+
 ## To run all tests / linting
 
 ```
