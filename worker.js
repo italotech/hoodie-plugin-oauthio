@@ -7,12 +7,14 @@ module.exports = function (hoodie, callback) {
   'use strict';
 
   // setup task handlers
-  hoodie.task.on('hello:add', function (db, task) {
+  hoodie.tasks.on('hello:add', function (db, task) {
+    console.log(['GOT TASK', db, task]);
     task.msg = 'Hello, ' + task.name;
     hoodie.task.success(db, task);
   });
 
   // plugin initialization complete
+  console.log(['INIT DONE']);
   callback();
 
 };

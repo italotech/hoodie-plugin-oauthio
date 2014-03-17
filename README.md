@@ -1,0 +1,22 @@
+# Hoodie Plugin Template
+
+This is a template layout for a Hoodie plugin. It contains a Gruntfile with
+appropriate tasks for running jshint, unit tests and browser tests against
+a Hoodie server.
+
+## To run all tests / linting
+
+```
+grunt test
+```
+
+If your plugin depends on other plugins being present (usually it will at
+least depend on the hoodie users plugin), then make sure they're included
+in your devDependencies in package.json and listed in the hoodie.plugins
+property. This way, they'll also get started when the browser tests are
+run.
+
+NOTE: When running the browser tests, the grunt tasks will remove the local
+Hoodie 'data' directory completely so you get a clean database to test
+against. Be careful you don't use this path for any data you may want to
+keep!

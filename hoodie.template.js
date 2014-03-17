@@ -10,7 +10,7 @@ Hoodie.extend(function (hoodie) {
 
   // extend the hoodie.js API
   hoodie.hello = function (name) {
-    hoodie.task.start('hello', {
+    return hoodie.task.start('hello', {
       name: name
     });
   };

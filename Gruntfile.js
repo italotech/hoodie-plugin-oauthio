@@ -30,6 +30,9 @@ module.exports = function (grunt) {
     },
 
     shell: {
+      removeData: {
+        command: 'rm -rf ' + require('path').resolve(__dirname, 'data')
+      },
       npmLink: {
         command: 'npm link && npm link hoodie-plugin-template'
       },
@@ -53,6 +56,12 @@ module.exports = function (grunt) {
           }
         }
       }
+    },
+
+    env: {
+      test: {
+        HOODIE_SETUP_PASSWORD: 'testing'
+      }
     }
 
   });
@@ -63,11 +72,14 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-continue');
   grunt.loadNpmTasks('grunt-hoodie');
   grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-env');
 
   grunt.registerTask('default', []);
   grunt.registerTask('test', [
+    'env:test',
     'jshint',
     'simplemocha:unit',
+    'shell:removeData',
     'shell:npmLink',
     'shell:installPlugin',
     'hoodie',
