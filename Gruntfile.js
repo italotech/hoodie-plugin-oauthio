@@ -18,10 +18,10 @@ module.exports = function (grunt) {
 
     simplemocha: {
       options: {
-        ui: 'exports'
+        ui: 'tdd'
       },
       unit: {
-        src: ['test/unit/example.js']
+        src: ['test/unit/*.js']
       }
     },
 

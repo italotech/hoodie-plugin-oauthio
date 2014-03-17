@@ -13,14 +13,8 @@
     mocha.reporter('html');
     assert = chai.assert;
   </script>
+  <script src="test-example.js"></script>
   <script>
-
-    suite('example', function () {
-      test('do stuff', function () {
-        assert.equal(1, 2);
-      });
-    });
-
     if (window.mochaPhantomJS) {
       mochaPhantomJS.run();
     }
