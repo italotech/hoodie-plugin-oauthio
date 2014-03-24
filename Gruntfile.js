@@ -9,7 +9,8 @@ module.exports = function (grunt) {
       files: [
         'Gruntfile.js',
         'hoodie.template.js',
-        'worker.js'
+        'worker.js',
+        'hooks/*.js'
       ],
       options: {
         jshintrc: '.jshintrc'
