@@ -4,7 +4,6 @@
  */
 
 module.exports = function (hoodie, callback) {
-  'use strict';
 
   // setup task handlers
   hoodie.task.on('hello:add', function (db, task) {
