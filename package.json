@@ -9,7 +9,7 @@
     "grunt": "^0.4.3",
     "grunt-shell": "^0.6.4",
     "grunt-mocha-browser": "0.0.4",
-    "grunt-hoodie": "git://github.com/caolan/grunt-hoodie.git#stop-task",
+    "grunt-hoodie": "0.3.0",
     "grunt-continue": "0.0.1",
     "hoodie-server": "^0.9.19",
     "grunt-simple-mocha": "^0.4.0",
