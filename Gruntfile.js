@@ -41,10 +41,10 @@ module.exports = function (grunt) {
         command: 'npm unlink && npm unlink <%= pkg.name %>'
       },
       installPlugin: {
-        command: 'hoodie install <%= pkg.name %>'
+        command: 'hoodie install <%= pkg.name.replace("hoodie-plugin-", "") %>'
       },
       removePlugin: {
-        command: 'hoodie uninstall <%= pkg.name %>'
+        command: 'hoodie uninstall <%= pkg.name.replace("hoodie-plugin-", "") %>'
       }
     },
 
