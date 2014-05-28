@@ -23,5 +23,8 @@
       "hoodie-plugin-users"
     ]
   },
-  "dependencies": {}
+  "dependencies": {},
+  "scripts": {
+    "test": "grunt test"
+  }
 }
