@@ -4,19 +4,19 @@
   "description": "Basic Hoodie plugin layout",
   "main": "worker.js",
   "devDependencies": {
-    "mocha": "~1.17.1",
     "chai": "~1.9.0",
     "grunt": "^0.4.3",
-    "grunt-shell": "^0.6.4",
-    "grunt-mocha-browser": "0.0.4",
-    "grunt-hoodie": "0.3.0",
     "grunt-continue": "0.0.1",
-    "hoodie-server": "^0.9.19",
-    "grunt-simple-mocha": "^0.4.0",
     "grunt-contrib-jshint": "^0.9.2",
-    "grunt-env": "^0.4.1",
     "grunt-contrib-watch": "^0.6.0",
-    "hoodie-plugin-users": "^0.1.0"
+    "grunt-env": "^0.4.1",
+    "grunt-hoodie": "^0.5.4",
+    "grunt-mocha-browser": "0.0.4",
+    "grunt-shell": "^0.6.4",
+    "grunt-simple-mocha": "^0.4.0",
+    "hoodie-plugin-users": "^0.1.0",
+    "hoodie-server": "^1.2.4",
+    "mocha": "^1.21.4"
   },
   "hoodie": {
     "plugins": [

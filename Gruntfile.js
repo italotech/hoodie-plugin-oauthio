@@ -97,7 +97,6 @@ module.exports = function (grunt) {
     'continueOn',
     'mocha_browser:all',
     'continueOff',
-    'hoodie_stop',
     'shell:npmUnlink',
     'shell:removePlugin'
   ]);
