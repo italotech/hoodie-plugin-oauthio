@@ -1,7 +1,7 @@
 {
-  "name": "hoodie-plugin-template",
-  "version": "1.0.0",
-  "description": "Basic Hoodie plugin layout",
+  "name": "hoodie-plugin-oauthio",
+  "version": "1.0.1",
+  "description": "OAuthio Hoodie plugin",
   "main": "worker.js",
   "devDependencies": {
     "chai": "~1.9.0",
