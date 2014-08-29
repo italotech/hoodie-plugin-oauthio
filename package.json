@@ -30,5 +30,19 @@
   },
   "scripts": {
     "test": "grunt test"
-  }
+  },
+  "maintainers": [
+    {
+      "name": "gabriel",
+      "email": "gabriel@goappes.com"
+    },
+    {
+      "name": "joao",
+      "email": "joao@goappes.com"
+    },
+    {
+      "name": "italo",
+      "email": "italo@goappes.com"
+    }
+  ]
 }
