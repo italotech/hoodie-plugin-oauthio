@@ -1,11 +1,12 @@
 {
   "name": "hoodie-plugin-oauthio",
-  "version": "0.1.0",
+  "version": "1.0.3",
   "description": "OAuth.io Hoodie Plugin",
   "keywords": [
     "hoodie-plugin-oauthio"
   ],
   "license": "MIT",
+  "main": "hoodie.oauthio.js",
   "ignore": [
     "**/.*",
     "karma.conf.js",
