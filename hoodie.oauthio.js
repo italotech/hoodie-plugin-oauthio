@@ -5,14 +5,33 @@
 
 /* global Hoodie */
 
+
 Hoodie.extend(function (hoodie) {
   'use strict';
 
-  // extend the hoodie.js API
-  hoodie.hello = function (name) {
-    return hoodie.task.start('hello', {
-      name: name
-    });
-  };
+	hoodie.oauthio = {
+		config: function (provider, connected) {
+			return hoodie.task.start('oauthioconfig', {
+				provider: provider,
+				connected: connected
+			});
+		},
+		login: function (user) {
+			return hoodie.task.start('oauthiologin', {
+				user: user
+			});
+		},
+	};
 
+	hoodie.account.getStateToken = function () {
+		return hoodie.task.start('getstatetoken');
+	}
+
+	hoodie.account.signInOauth = function (provider, code) {
+		return hoodie.task.start('signinoauth', {
+			provider: provider,
+			code: code
+		})
+	}
+	
 });

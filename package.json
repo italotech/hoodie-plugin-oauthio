@@ -1,6 +1,6 @@
 {
   "name": "hoodie-plugin-oauthio",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "OAuthio Hoodie plugin",
   "main": "worker.js",
   "devDependencies": {
@@ -23,7 +23,11 @@
       "hoodie-plugin-users"
     ]
   },
-  "dependencies": {},
+  "dependencies": {
+    "express-session": "^1.7.6",
+    "oauthio": "^0.2.1",
+    "password-hash": "^1.2.2"
+  },
   "scripts": {
     "test": "grunt test"
   }
