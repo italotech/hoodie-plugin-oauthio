@@ -45,13 +45,23 @@ module.exports = function (/* hoodie */) {
         false determines that the hook didn’t run successfully and causes Hoodie to
         return a 500 error.
     */
-    // 'server.api.plugin-request': function (/* request, reply */) {
-    //   console.log('server.api.plugin-request hook called');
+    'server.api': function (/* request, reply */) {
+      console.log('server.api.* hook called', arguments);
 
-    //   Use `hoodie` like you would in worker.js to access the
-    //   main data store
+      // Use `hoodie` like you would in worker.js to access the
+      // main data store
 
-    //   return true
-    // }
+      return true;
+    },
+
+    //http://localhost:6018/_api/_plugins/oauthio/_api
+    'server.api.plugin-request': function (request, reply) {
+      console.log('server.api.plugin-request hook called', request, reply);
+
+      // Use `hoodie` like you would in worker.js to access the
+      // main data store
+
+      return true;
+    }
   };
 };
