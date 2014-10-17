@@ -9,63 +9,67 @@
 Hoodie.extend(function (hoodie) {
   'use strict';
 
-	hoodie.oauthio = {
-		config: function (provider, connected) {
-			return hoodie.task.start('oauthioconfig', {
-				provider: provider,
-				connected: connected
-			});
-		},
-		login: function (user) {
-			return hoodie.task.start('oauthiologin', {
-				user: user
-			});
-		},
-	};
-
   hoodie.account.oauthio = {
     me: {},
-    provider: 'facebook'
-  }
-
-  hoodie.account.getOAuthConfig = function () {
-    console.log('getOAuthConfig');
-    return hoodie.task.start('getoauthconfig', {});
-  }
-
-  hoodie.account.oauth = function (task) {
-    console.log('oauth');
-    OAuth.initialize(task.oAuthConfig.appKey);
-    OAuth.setOAuthdURL(task.oAuthConfig.oAuthdURL);
-    return OAuth.popup(hoodie.account.oauthio.provider);
-  }
-
-  hoodie.account.me = function (oauth) {
-    console.log('me');
-    return oauth.me();
-  }
-
-  hoodie.account.verifyUser = function (me) {
-    console.log('verifyUser');
-    hoodie.account.oauthio.me = me;
-    return hoodie.task.start('verifyuser', {provider: hoodie.account.oauthio.provider, me: me});
-  }
-
-  hoodie.account.signUpWith = function(task) {
-    console.log('signUpWith');
-    if (!task.user) {
-      return hoodie.task.start('signupwith', {provider: hoodie.account.oauthio.provider, me: hoodie.account.oauthio.me});
-    };
-  }
-
-  hoodie.account.signInWith = function (provider, options) {
-    console.log('signInWith');
-    hoodie.account.oauthio.provider = provider;
-    return hoodie.account.getOAuthConfig()
-      .then(hoodie.account.oauth)
-      .then(hoodie.account.me)
-      .then(hoodie.account.verifyUser)
-      .then(hoodie.account.signUpWith);
+    provider: 'facebook',
+    getOAuthConfig: function () {
+      var defer = window.jQuery.Deferred();
+      console.log('getOAuthConfig');
+      hoodie.task.start('getoauthconfig', {})
+        .then(defer.resolve)
+        .fail(defer.reject);
+      return defer.promise();
+    },
+    oauth: function (task) {
+      var defer = window.jQuery.Deferred();
+      console.log('oauth');
+      OAuth.initialize(task.oAuthConfig.appKey);
+      OAuth.setOAuthdURL(task.oAuthConfig.oAuthdURL);
+      OAuth.popup(hoodie.account.oauthio.provider)
+        .then(defer.resolve)
+        .fail(defer.reject);
+      return defer.promise();
+    },
+    getMe: function (oauth) {
+      var defer = window.jQuery.Deferred();
+      console.log('me');
+      oauth.me()
+        .then(defer.resolve)
+        .fail(defer.reject);
+      return defer.promise();
+    },
+    verifyUser: function (me) {
+      var defer = window.jQuery.Deferred();
+      console.log('verifyUser');
+      hoodie.account.oauthio.me = me;
+      hoodie.task.start('verifyuser', {provider: hoodie.account.oauthio.provider, me: me})
+        .then(defer.resolve)
+        .fail(defer.reject);
+      return defer.promise();
+    },
+    signUpWith: function(task) {
+      var defer = window.jQuery.Deferred();
+      console.log('signUpWith');
+      if (!task.user) {
+        hoodie.task.start('signupwith', {provider: hoodie.account.oauthio.provider, me: hoodie.account.oauthio.me})
+          .then(defer.resolve)
+          .fail(defer.reject);
+        return defer.promise();
+      };
+    },
+    signInWith: function (provider, options) {
+      var defer = window.jQuery.Deferred();
+      console.log('signInWith');
+      hoodie.account.oauthio.provider = provider;
+      hoodie.account.oauthio.getOAuthConfig()
+        .then(hoodie.account.oauthio.oauth)
+        .then(hoodie.account.oauthio.getMe)
+        .then(hoodie.account.oauthio.verifyUser)
+        .then(hoodie.account.oauthio.signUpWith)
+        .then(defer.resolve)
+        .fail(defer.reject);
+      return defer.promise();
+    }
   }
 
 });
