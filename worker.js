@@ -39,6 +39,7 @@ module.exports = function (hoodie, callback) {
     // console.log('getoauthconfig', task);
 
     try {
+      oauth_cofig = hoodie.config.get('oauthio_config');
       task.oAuthConfig = {
         appKey: oauth_cofig.settings.publicKey,
         oAuthdURL: oauth_cofig.settings.url
