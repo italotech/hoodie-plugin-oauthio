@@ -1,4 +1,4 @@
-hoodie-plugin-oathio
+hoodie-plugin-oauthio
 ====================
 
 configure the admin area of the plugin and
