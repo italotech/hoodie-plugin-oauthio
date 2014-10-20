@@ -36,17 +36,17 @@ module.exports = function (hoodie, callback) {
   }
 
   hoodie.task.on('getoauthconfig:add', function (db, task) {
-    console.log('getoauthconfig', task);
+    // console.log('getoauthconfig', task);
 
     try {
       task.oAuthConfig = {
         appKey: oauth_cofig.settings.publicKey,
         oAuthdURL: oauth_cofig.settings.url
       };
-      console.log(task);
+      // console.log(task);
       hoodie.task.success(db, task);
     } catch (err) {
-      console.log('auth try error', err);
+      // console.log('auth try error', err);
       hoodie.task.error(db, task, err);
     }
 
@@ -54,21 +54,21 @@ module.exports = function (hoodie, callback) {
 
   hoodie.task.on('verifyuser:add', function (db, task) {
 
-    console.log('verifyuser', task);
+    // console.log('verifyuser', task);
     var doc = task.me.raw;
     try {
       pluginDb.find(task.provider, doc.id, function (err, _doc) {
         task.user = _doc;
         if (err && err.reason && err.reason !== 'missing') {
-          console.log('err',arguments);
+          // console.log('err',arguments);
           hoodie.task.error(db, task, err);
         } else {
-          console.log('verifyuser sucess',doc, db, task);
+          // console.log('verifyuser sucess',doc, db, task);
           hoodie.task.success(db, task);
         }
       });
     } catch (err) {
-      console.log('auth try error', err);
+      // console.log('auth try error', err);
       hoodie.task.error(db, task, err);
     }
   });
@@ -80,7 +80,7 @@ module.exports = function (hoodie, callback) {
 
   hoodie.task.on('signupwith:add', function (db, task) {
 
-    console.log('signupwith', task);
+    // console.log('signupwith', task);
     var doc = task.me.raw;
     try {
       passwd.generatePassword(function (err, pass){
@@ -90,26 +90,26 @@ module.exports = function (hoodie, callback) {
           if (err && err.reason && err.reason !== 'missing') {
             hoodie.task.error(db, task, err);
           } else {
-            console.log('signupwith sucess', task);
+            // console.log('signupwith sucess', task);
             hoodie.task.success(db, task);
           }
         });
       });
     } catch (err) {
-      console.log('auth try error', err);
+      // console.log('auth try error', err);
       hoodie.task.error(db, task, err);
     }
   });
 
   hoodie.task.on('getstatetoken:add', function (db, task) {
 
-    console.log('getstatetoken', task);
+    // console.log('getstatetoken', task);
 
     try {
       task.stateToken = OAuth.generateStateToken(session_object);
       hoodie.task.success(db, task);
     } catch (err) {
-      console.log('auth try error', err);
+      // console.log('auth try error', err);
       hoodie.task.error(db, task, err);
     }
 
@@ -117,7 +117,7 @@ module.exports = function (hoodie, callback) {
 
 
   hoodie.task.on('signinoauth:add', function (db, task) {
-    console.log('signinoauth', task);
+    // console.log('signinoauth', task);
 
     var options = {
       code: task.code
@@ -128,30 +128,30 @@ module.exports = function (hoodie, callback) {
           return auth.me();
         })
         .then(function (profile) {
-          console.log('auth', profile);
+          // console.log('auth', profile);
           //TODO fix the password
           profile.password = profile.id + oauth_cofig.settings.secretKey;
           task.profile = profile;
           hoodie.task.success(db, task);
         })
         .fail(function (error) {
-          console.log('auth error', error);
+          // console.log('auth error', error);
           hoodie.task.error(db, task, error);
         });
     } catch (err) {
-      console.log('auth try error', err);
+      // console.log('auth try error', err);
       hoodie.task.error(db, task, err);
     }
 
     // var add = hoodie.account.add//('oath', task );
-    // console.log('add', add);
+    // // console.log('add', add);
 
       // .then(function (sUp) {
-      //  console.log('sUp', sUp);
+      //  // console.log('sUp', sUp);
     //    hoodie.task.success(db, task);
       // })
       // .fail(function (err) {
-      //  console.log('sUp fail', err);
+      //  // console.log('sUp fail', err);
       //  hoodie.task.error(db, task, err);
       // });
 
@@ -194,7 +194,7 @@ module.exports = function (hoodie, callback) {
   //      updateVals['connections'] = connections; //and make sure we store the latest
 
   //      //update values
-  //      hoodie.account.update('user', id, updateVals, function(err, data){ console.log(data); });
+  //      hoodie.account.update('user', id, updateVals, function(err, data){ // console.log(data); });
 
   //      //mark as complete
   //      auths[req.session.ref]['complete'] = true;
