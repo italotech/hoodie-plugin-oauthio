@@ -27,15 +27,8 @@ module.exports = function (hoodie, callback) {
           'secretKey': ''
         }
       };
-    var default_oauthio_config_debug = {
-        'enabled': true,
-        'settings': {
-          'url': 'http://golearn-oauth-io-dev.herokuapp.com',
-          'publicKey': 'Cd0l_UHQndc-_tZwgA54k1z1Zb4',
-          'secretKey': 'Re7HgSu9SdBGPpe7_vWAJe3Nhbs'
-        }
-      };
-    hoodie.config.set('oauthio_config', default_oauthio_config_debug);
+
+    hoodie.config.set('oauthio_config', default_oauthio_config);
     oauth_cofig = hoodie.config.get('oauthio_config');
     //OAuth.setOAuthdURL(oauth_cofig.settings.url, '/');
     OAuth.setOAuthdUrl(oauth_cofig.settings.url, '/');
