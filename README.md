@@ -1,6 +1,8 @@
 hoodie-plugin-oauthio
 ====================
 
+install https://oauth.io/docs/oauthd
+
 configure the admin area of the plugin and
 
 ```javascript
