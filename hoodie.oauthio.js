@@ -16,42 +16,26 @@ Hoodie.extend(function (hoodie) {
     provider: 'g+',
 
     getOAuthConfig: function () {
-      var defer = window.jQuery.Deferred();
       console.log('getOAuthConfig');
-      hoodie.task.start('getoauthconfig', {})
-        .then(defer.resolve)
-        .fail(defer.reject);
-      return defer.promise();
+      return hoodie.task.start('getoauthconfig', {});
     },
 
     oauth: function (task) {
-      var defer = window.jQuery.Deferred();
       console.log('oauth');
       OAuth.initialize(task.oAuthConfig.appKey);
       OAuth.setOAuthdURL(task.oAuthConfig.oAuthdURL);
-      OAuth.popup(hoodie.account.oauthio.provider)
-        .done(defer.resolve)
-        .fail(defer.reject);
-      return defer.promise();
+      return OAuth.popup(hoodie.account.oauthio.provider);
     },
 
     getMe: function (oauth) {
-      var defer = window.jQuery.Deferred();
       console.log('me');
-      oauth.me()
-        .then(defer.resolve)
-        .fail(defer.reject);
-      return defer.promise();
+      return oauth.me();
     },
 
     verifyUser: function (me) {
-      var defer = window.jQuery.Deferred();
       console.log('verifyUser');
       hoodie.account.oauthio.me = me;
-      hoodie.task.start('verifyuser', {provider: hoodie.account.oauthio.provider, me: me})
-        .then(defer.resolve)
-        .fail(defer.reject);
-      return defer.promise();
+      return hoodie.task.start('verifyuser', {provider: hoodie.account.oauthio.provider, me: me});
     },
 
     signUpWith: function(task) {
@@ -62,8 +46,22 @@ Hoodie.extend(function (hoodie) {
           .then(defer.resolve)
           .fail(defer.reject);
       } else {
-        defer.reject('encontrou o corno');
+        defer.resolve(task);
       };
+      return defer.promise();
+    },
+
+    signinHoodie: function(task) {
+      var defer = window.jQuery.Deferred();
+      hoodie.account.signIn(task.user.email, task.user.password)
+          .then(defer.resolve)
+          .fail(function () {
+            hoodie.account.signUp(task.user.email, task.user.password)
+              .then(function () {
+                return hoodie.account.oauthio.signinHoodie(task);
+              })
+              .fail(defer.reject);
+          });
       return defer.promise();
     },
 
@@ -76,6 +74,8 @@ Hoodie.extend(function (hoodie) {
         .then(hoodie.account.oauthio.getMe)
         .then(hoodie.account.oauthio.verifyUser)
         .then(hoodie.account.oauthio.signUpWith)
+        .then(hoodie.account.oauthio.signinHoodie)
+
         .then(defer.resolve)
         .fail(defer.reject);
       return defer.promise();

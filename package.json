@@ -1,6 +1,6 @@
 {
   "name": "hoodie-plugin-oauthio",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "OAuthio Hoodie plugin",
   "main": "worker.js",
   "devDependencies": {
@@ -14,7 +14,7 @@
     "grunt-mocha-browser": "0.0.4",
     "grunt-shell": "^0.6.4",
     "grunt-simple-mocha": "^0.4.0",
-    "hoodie-plugin-users": "^2.1.0",
+    "hoodie-plugin-users": "^2.1.2",
     "hoodie-server": "^1.2.4",
     "mocha": "^1.21.4"
   },
@@ -26,6 +26,7 @@
   "dependencies": {
     "async": "^0.9.0",
     "express-session": "^1.7.6",
+    "jsonwebtoken": "^1.1.2",
     "oauthio": "^0.2.1",
     "password-hash": "^1.2.2"
   },

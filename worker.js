@@ -8,24 +8,34 @@
 //    passwordHash = require('password-hash');
 var OAuth = require('oauthio'),
     session = require('express-session'),
-    async = require('async');
+    async = require('async'),
+    passwd = require("hoodie-plugin-users/lib/password_reset");
 
 module.exports = function (hoodie, callback) {
+  debugger;
   var oauth_cofig = hoodie.config.get('oauthio_config');
   var pluginDb = hoodie.database(exports.dbname);
 
   if (!oauth_cofig) {
 
     var session_object = session({secret: 'keyboard cat'});
-    hoodie.config.set('oauthio_config',
-      {
+    var default_oauthio_config = {
         'enabled': false,
         'settings': {
           'url': 'https://oauth.io',
           'publicKey': '',
           'secretKey': ''
         }
-      });
+      };
+    var default_oauthio_config_debug = {
+        'enabled': true,
+        'settings': {
+          'url': 'http://golearn-oauth-io-dev.herokuapp.com',
+          'publicKey': 'Cd0l_UHQndc-_tZwgA54k1z1Zb4',
+          'secretKey': 'Re7HgSu9SdBGPpe7_vWAJe3Nhbs'
+        }
+      };
+    hoodie.config.set('oauthio_config', default_oauthio_config_debug);
     oauth_cofig = hoodie.config.get('oauthio_config');
     //OAuth.setOAuthdURL(oauth_cofig.settings.url, '/');
     OAuth.setOAuthdUrl(oauth_cofig.settings.url, '/');
@@ -49,21 +59,18 @@ module.exports = function (hoodie, callback) {
 
   });
 
-  function getId(provider, id) {
-    return provider + '/' + id
-  }
-
   hoodie.task.on('verifyuser:add', function (db, task) {
 
     console.log('verifyuser', task);
+    var doc = task.me.raw;
     try {
-      pluginDb.find('user', getId(task.provider, task.me.id), function (err, doc) {
-        task.user = doc;
+      pluginDb.find(task.provider, doc.id, function (err, _doc) {
+        task.user = _doc;
         if (err && err.reason && err.reason !== 'missing') {
           console.log('err',arguments);
           hoodie.task.error(db, task, err);
         } else {
-          console.log('sucess',doc, db, task);
+          console.log('verifyuser sucess',doc, db, task);
           hoodie.task.success(db, task);
         }
       });
@@ -73,19 +80,27 @@ module.exports = function (hoodie, callback) {
     }
   });
 
+  function generatePassword(cb) {
+
+    return salt;
+  }
+
   hoodie.task.on('signupwith:add', function (db, task) {
 
     console.log('signupwith', task);
+    var doc = task.me.raw;
     try {
-      task.me._id = getId(task.provider, task.me.id);
-      pluginDb.add('user', task.me, function (err, doc) {
-        console.log(arguments);
-        task.user = doc;
-        if (err && err.reason && err.reason !== 'missing') {
-          hoodie.task.error(db, task, err);
-        } else {
-          hoodie.task.success(db, task);
-        }
+      passwd.generatePassword(function (err, pass){
+        doc.password = pass;
+        pluginDb.add(task.provider, doc, function (err, _doc) {
+          task.user = doc;
+          if (err && err.reason && err.reason !== 'missing') {
+            hoodie.task.error(db, task, err);
+          } else {
+            console.log('signupwith sucess', task);
+            hoodie.task.success(db, task);
+          }
+        });
       });
     } catch (err) {
       console.log('auth try error', err);
