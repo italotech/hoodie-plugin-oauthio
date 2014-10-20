@@ -10,8 +10,11 @@ Hoodie.extend(function (hoodie) {
   'use strict';
 
   hoodie.account.oauthio = {
+
     me: {},
-    provider: 'facebook',
+
+    provider: 'g+',
+
     getOAuthConfig: function () {
       var defer = window.jQuery.Deferred();
       console.log('getOAuthConfig');
@@ -20,16 +23,18 @@ Hoodie.extend(function (hoodie) {
         .fail(defer.reject);
       return defer.promise();
     },
+
     oauth: function (task) {
       var defer = window.jQuery.Deferred();
       console.log('oauth');
       OAuth.initialize(task.oAuthConfig.appKey);
       OAuth.setOAuthdURL(task.oAuthConfig.oAuthdURL);
       OAuth.popup(hoodie.account.oauthio.provider)
-        .then(defer.resolve)
+        .done(defer.resolve)
         .fail(defer.reject);
       return defer.promise();
     },
+
     getMe: function (oauth) {
       var defer = window.jQuery.Deferred();
       console.log('me');
@@ -38,6 +43,7 @@ Hoodie.extend(function (hoodie) {
         .fail(defer.reject);
       return defer.promise();
     },
+
     verifyUser: function (me) {
       var defer = window.jQuery.Deferred();
       console.log('verifyUser');
@@ -47,6 +53,7 @@ Hoodie.extend(function (hoodie) {
         .fail(defer.reject);
       return defer.promise();
     },
+
     signUpWith: function(task) {
       var defer = window.jQuery.Deferred();
       console.log('signUpWith');
@@ -54,9 +61,12 @@ Hoodie.extend(function (hoodie) {
         hoodie.task.start('signupwith', {provider: hoodie.account.oauthio.provider, me: hoodie.account.oauthio.me})
           .then(defer.resolve)
           .fail(defer.reject);
-        return defer.promise();
+      } else {
+        defer.reject('encontrou o corno');
       };
+      return defer.promise();
     },
+
     signInWith: function (provider, options) {
       var defer = window.jQuery.Deferred();
       console.log('signInWith');
@@ -70,6 +80,7 @@ Hoodie.extend(function (hoodie) {
         .fail(defer.reject);
       return defer.promise();
     }
+
   }
 
 });

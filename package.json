@@ -14,7 +14,7 @@
     "grunt-mocha-browser": "0.0.4",
     "grunt-shell": "^0.6.4",
     "grunt-simple-mocha": "^0.4.0",
-    "hoodie-plugin-users": "^0.1.0",
+    "hoodie-plugin-users": "^2.1.0",
     "hoodie-server": "^1.2.4",
     "mocha": "^1.21.4"
   },
