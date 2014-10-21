@@ -25,3 +25,8 @@ in html add the oauth lib
     <script src="lib/oauth-js/dist/oauth.js"></script>
     <script src="lib/hoodie-plugin-oauthio/hoodie.oauthio.js"></script>
 ```    
+
+to get me information
+```
+    hoodie.account.oauthio.me
+```
