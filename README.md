@@ -20,7 +20,7 @@ configure the admin area of the plugin and
 ```
 
 in html add the oauth lib
-```
+```html
     <script src="lib/hoodie/dist/hoodie.js"></script>
     <script src="lib/oauth-js/dist/oauth.js"></script>
     <script src="lib/hoodie-plugin-oauthio/hoodie.oauthio.js"></script>
