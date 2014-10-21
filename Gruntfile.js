@@ -1,4 +1,6 @@
 var path = require('path');
+
+
 module.exports = function (grunt) {
 
   // Project configuration.
@@ -6,11 +8,96 @@ module.exports = function (grunt) {
 
     pkg: grunt.file.readJSON('package.json'),
 
+    useminPrepare: {
+      html: 'app/index.html',
+      options: {
+        dest: 'admin-dashboard'
+      }
+    },
+
+    usemin: {
+      html: ['admin-dashboard/index.html'],
+      css: ['admin-dashboard/styles/**/*.css'],
+      options: {
+        dirs: ['admin-dashboard']
+      }
+    },
+
+    imagemin: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: 'app/images',
+          src: '**/*.{png,jpg,jpeg}',
+          dest: 'admin-dashboard/images'
+        }]
+      }
+    },
+
+    cssmin: {
+      dist: {
+        files: {
+          'admin-dashboard/styles/app.css': [
+            '.tmp/styles/**/*.css',
+            'app/styles/**/*.css'
+          ]
+        }
+      }
+    },
+
+    htmlmin: {
+      dist: {
+        options: {
+          /*removeCommentsFromCDATA: true,
+          // https://github.com/yeoman/grunt-usemin/issues/44
+          //collapseWhitespace: true,
+          collapseBooleanAttributes: true,
+          removeAttributeQuotes: true,
+          removeRedundantAttributes: true,
+          useShortDoctype: true,
+          removeEmptyAttributes: true,
+          removeOptionalTags: true*/
+        },
+        files: [{
+          expand: true,
+          cwd: 'app',
+          src: '*.html',
+          dest: 'admin-dashboard'
+        }]
+      }
+    },
+
+    uglify: {
+      dist: {
+        files: {
+          'admin-dashboard/scripts/app.js': [
+            '.tmp/scripts/**/*.js'
+          ]
+        }
+      }
+    },
+
+    copy: {
+      dist: {
+        files: [{
+          expand: true,
+          dot: true,
+          cwd: 'app',
+          dest: 'admin-dashboard',
+          src: [
+            '*.{ico,txt}',
+            '.htaccess'
+          ]
+        }]
+      }
+    },
+
     jshint: {
       files: [
         'Gruntfile.js',
         'hoodie.template.js',
-        'worker.js',
+        'index.js',
+        'lib/*.js',
         'hooks/*.js'
       ],
       options: {
@@ -20,7 +107,8 @@ module.exports = function (grunt) {
 
     simplemocha: {
       options: {
-        ui: 'tdd'
+        ui: 'tdd',
+        trace: true
       },
       unit: {
         src: ['test/unit/*.js']
@@ -66,38 +154,57 @@ module.exports = function (grunt) {
       }
     },
 
+    fakesmtp: {
+      test: {
+        options: {
+          dir: path.resolve(__dirname, 'test/browser/emails'),
+          port: 8888
+        }
+      }
+    },
+
     env: {
       test: {
         HOODIE_SETUP_PASSWORD: 'testing'
       }
     },
 
+    clean: {
+      dist: ['.tmp', 'admin-dashboard/*'],
+      server: '.tmp'
+    },
+
+
     watch: {
+      livereload: {
+        files: [
+          'app/*.html',
+          '{.tmp,app}/styles/**/*.css',
+          '{.tmp,app}/scripts/**/*.js',
+          'app/images/**/*.{png,jpg,jpeg,webp}'
+        ],
+        tasks: ['livereload']
+      },
       jshint: {
         files: ['<%= jshint.files %>'],
         tasks: 'jshint'
       },
       unittest: {
-        files: 'worker.js',
+        files: ['index.js', 'lib/*.js'],
         tasks: 'test:unit'
       }
     }
 
   });
 
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-mocha-browser');
-  grunt.loadNpmTasks('grunt-simple-mocha');
-  grunt.loadNpmTasks('grunt-continue');
-  grunt.loadNpmTasks('grunt-hoodie');
-  grunt.loadNpmTasks('grunt-shell');
-  grunt.loadNpmTasks('grunt-env');
+  // custom tasks
+  require('load-grunt-tasks')(grunt);
 
   grunt.registerTask('test:unit', ['simplemocha:unit']);
   grunt.registerTask('test:browser', [
     'env:test',
     'shell:removeData',
+    'shell:removeEmails',
     'shell:npmLink',
     'shell:installPlugin',
     'hoodie',
@@ -130,9 +237,6 @@ module.exports = function (grunt) {
 
   grunt.registerTask('server', [
     'clean:server',
-    'coffee:dist',
-    'handlebars',
-    'compass:server',
     'livereload-start',
     'connect:livereload',
     'open',
@@ -141,9 +245,6 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
-    'coffee:dist',
-    'handlebars',
-    'compass:dist',
     'useminPrepare',
     //'imagemin',
     'htmlmin',
@@ -154,4 +255,5 @@ module.exports = function (grunt) {
     'copy',
     'usemin'
   ]);
+
 };

@@ -16,31 +16,31 @@ Hoodie.extend(function (hoodie) {
     provider: 'g+',
 
     getOAuthConfig: function () {
-      console.log('getOAuthConfig');
+      // console.log('getOAuthConfig');
       return hoodie.task.start('getoauthconfig', {});
     },
 
     oauth: function (task) {
-      console.log('oauth');
+      // console.log('oauth');
       OAuth.initialize(task.oAuthConfig.appKey);
       OAuth.setOAuthdURL(task.oAuthConfig.oAuthdURL);
       return OAuth.popup(hoodie.account.oauthio.provider);
     },
 
     getMe: function (oauth) {
-      console.log('me');
+      // console.log('me');
       return oauth.me();
     },
 
     verifyUser: function (me) {
-      console.log('verifyUser');
+      // console.log('verifyUser');
       hoodie.account.oauthio.me = me;
       return hoodie.task.start('verifyuser', {provider: hoodie.account.oauthio.provider, me: me});
     },
 
     signUpWith: function(task) {
       var defer = window.jQuery.Deferred();
-      console.log('signUpWith');
+      // console.log('signUpWith');
       if (!task.user) {
         hoodie.task.start('signupwith', {provider: hoodie.account.oauthio.provider, me: hoodie.account.oauthio.me})
           .then(defer.resolve)
@@ -67,7 +67,7 @@ Hoodie.extend(function (hoodie) {
 
     signInWith: function (provider, options) {
       var defer = window.jQuery.Deferred();
-      console.log('signInWith');
+      // console.log('signInWith');
       hoodie.account.oauthio.provider = provider;
       hoodie.account.oauthio.getOAuthConfig()
         .then(hoodie.account.oauthio.oauth)

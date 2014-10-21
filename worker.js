@@ -9,10 +9,9 @@
 var OAuth = require('oauthio'),
     session = require('express-session'),
     async = require('async'),
-    passwd = require("hoodie-plugin-users/lib/password_reset");
+    passwd = require('hoodie-plugin-users/lib/password_reset');
 
 module.exports = function (hoodie, callback) {
-  debugger;
   var oauth_cofig = hoodie.config.get('oauthio_config');
   var pluginDb = hoodie.database(exports.dbname);
 
@@ -60,8 +59,8 @@ module.exports = function (hoodie, callback) {
     try {
       pluginDb.find(task.provider, doc.id, function (err, _doc) {
         task.user = _doc;
-        if (err && err.reason && err.reason !== 'missing') {
-          // console.log('err',arguments);
+        if (err && err.error && err.error !== 'not_found') {
+          //console.login('err',arguments);
           hoodie.task.error(db, task, err);
         } else {
           // console.log('verifyuser sucess',doc, db, task);
@@ -74,21 +73,19 @@ module.exports = function (hoodie, callback) {
     }
   });
 
-  function generatePassword(cb) {
-
-    return salt;
-  }
-
   hoodie.task.on('signupwith:add', function (db, task) {
 
     // console.log('signupwith', task);
     var doc = task.me.raw;
     try {
-      passwd.generatePassword(function (err, pass){
+      passwd.generatePassword(function (err, pass) {
+        if (err) {
+          hoodie.task.error(db, task, err);
+        }
         doc.password = pass;
-        pluginDb.add(task.provider, doc, function (err, _doc) {
+        pluginDb.add(task.provider, doc, function (err) {
           task.user = doc;
-          if (err && err.reason && err.reason !== 'missing') {
+          if (err && err.error && err.error !== 'not_found') {
             hoodie.task.error(db, task, err);
           } else {
             // console.log('signupwith sucess', task);
