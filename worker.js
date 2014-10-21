@@ -59,7 +59,7 @@ module.exports = function (hoodie, callback) {
           //console.login('err',arguments);
           hoodie.task.error(db, task, err);
         } else {
-          // console.log('verifyuser sucess',doc, db, task);
+//          console.log('verifyuser sucess',task);
           hoodie.task.success(db, task);
         }
       });
@@ -79,12 +79,14 @@ module.exports = function (hoodie, callback) {
           hoodie.task.error(db, task, err);
         }
         doc.password = pass;
-        pluginDb.add(task.provider, doc, function (err) {
+        pluginDb.add(task.provider, doc, function (err, _doc) {
           task.user = doc;
+          task.user._rev = _doc.rev;
           if (err && err.error && err.error !== 'not_found') {
+          //console.login('err',arguments);
             hoodie.task.error(db, task, err);
           } else {
-            // console.log('signupwith sucess', task);
+//            console.log('signupwith sucess', task);
             hoodie.task.success(db, task);
           }
         });

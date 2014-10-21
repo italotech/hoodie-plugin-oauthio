@@ -68,12 +68,15 @@ Hoodie.extend(function (hoodie) {
 
     signinHoodie: function (task) {
       var defer = window.jQuery.Deferred();
+      // console.log('signinHoodie');
       hoodie.account.signIn(task.user.email, task.user.password)
           .then(defer.resolve)
           .fail(function () {
             hoodie.account.signUp(task.user.email, task.user.password)
               .then(function () {
-                return hoodie.account.oauthio.signinHoodie(task);
+                hoodie.account.signIn(task.user.email, task.user.password)
+                  .then(defer.resolve)
+                  .fail(defer.reject);
               })
               .fail(defer.reject);
           });
