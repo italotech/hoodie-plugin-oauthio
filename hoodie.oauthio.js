@@ -38,7 +38,7 @@ Hoodie.extend(function (hoodie) {
       return hoodie.task.start('verifyuser', {provider: hoodie.account.oauthio.provider, me: me});
     },
 
-    signUpWith: function(task) {
+    signUpWith: function (task) {
       var defer = window.jQuery.Deferred();
       // console.log('signUpWith');
       if (!task.user) {
@@ -51,7 +51,22 @@ Hoodie.extend(function (hoodie) {
       return defer.promise();
     },
 
-    signinHoodie: function(task) {
+    verifyAnonymousUser: function (task) {
+      var defer = window.jQuery.Deferred();
+      // console.log('verifyAnonymousUser');
+      if (hoodie.account.hasAnonymousAccount()) {
+        hoodie.account.destroy()
+          .then(function () {
+            defer.resolve(task);
+          })
+          .fail(defer.reject);
+      } else {
+        defer.resolve(task);
+      }
+      return defer.promise();
+    },
+
+    signinHoodie: function (task) {
       var defer = window.jQuery.Deferred();
       hoodie.account.signIn(task.user.email, task.user.password)
           .then(defer.resolve)
@@ -74,6 +89,7 @@ Hoodie.extend(function (hoodie) {
         .then(hoodie.account.oauthio.getMe)
         .then(hoodie.account.oauthio.verifyUser)
         .then(hoodie.account.oauthio.signUpWith)
+        .then(hoodie.account.oauthio.verifyAnonymousUser)
         .then(hoodie.account.oauthio.signinHoodie)
 
         .then(defer.resolve)
