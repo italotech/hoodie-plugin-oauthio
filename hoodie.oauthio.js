@@ -12,7 +12,7 @@ Hoodie.extend(function (hoodie) {
   hoodie.account.oauthio = {
 
     me: {},
-
+    user: {},
     provider: 'g+',
 
     getOAuthConfig: function () {
@@ -30,6 +30,9 @@ Hoodie.extend(function (hoodie) {
     getMe: function (oauth) {
       // console.log('me');
       return oauth.me();
+    },
+    saveMe: function (me) {
+      hoodie.store.add('oauth_config', {})
     },
 
     verifyUser: function (me) {
@@ -69,12 +72,14 @@ Hoodie.extend(function (hoodie) {
     signinHoodie: function (task) {
       var defer = window.jQuery.Deferred();
       // console.log('signinHoodie');
-      hoodie.account.signIn(task.user.email, task.user.password)
+      hoodie.account.oauthio.user.email = task.user.email;
+      hoodie.account.oauthio.user.password = task.user.password;
+      hoodie.account.signIn(task.user.email, task.user.password, { moveData : true })
           .then(defer.resolve)
           .fail(function () {
             hoodie.account.signUp(task.user.email, task.user.password)
               .then(function () {
-                hoodie.account.signIn(task.user.email, task.user.password)
+                hoodie.account.signIn(task.user.email, task.user.password, { moveData : true })
                   .then(defer.resolve)
                   .fail(defer.reject);
               })
@@ -83,10 +88,59 @@ Hoodie.extend(function (hoodie) {
       return defer.promise();
     },
 
+    getLocalConfig: function () {
+      var defer = window.jQuery.Deferred();
+      hoodie.store.find('oauthconfig', 'userdata')
+        .then(defer.resolve)
+        .fail(function (err) {
+            hoodie.store.add('oauthconfig', { id: 'userdata' })
+              .then(defer.resolve)
+              .fail(defer.reject);
+          });
+      return defer.promise();
+    },
+
+    setLocalConfig: function (obj) {
+      obj.me = hoodie.account.oauthio.me.raw;
+      obj.provider = hoodie.account.oauthio.provider;
+      obj.user = hoodie.account.oauthio.user;
+      return hoodie.store.save('oauthconfig', 'userdata', obj);
+    },
+
+    authenticate: function () {
+      var defer = window.jQuery.Deferred();
+      hoodie.account.oauthio.getLocalConfig()
+        .then(function (oauthconfig) {
+          if (oauthconfig.user) {
+            hoodie.account.signIn(oauthconfig.user.email, oauthconfig.user.password, { moveData : true })
+              .then(defer.resolve)
+              .fail(defer.reject);
+          } else {
+            defer.reject('oauthio: please execute signInWith("provider");');
+          }
+        })
+        .fail(defer.reject);
+      return defer.promise();
+    },
+
+    isAuthenticate: function () {
+      var defer = window.jQuery.Deferred();
+      if (hoodie.account.username) {
+        defer.resolve({});
+      } else {
+        //try autenticate with local info
+        hoodie.account.oauthio.authenticate()
+          .then(defer.resolve)
+          .fail(defer.reject);
+      }
+      return defer.promise();
+    },
+
     signInWith: function (provider, options) {
       var defer = window.jQuery.Deferred();
       // console.log('signInWith');
       hoodie.account.oauthio.provider = provider;
+
       hoodie.account.oauthio.getOAuthConfig()
         .then(hoodie.account.oauthio.oauth)
         .then(hoodie.account.oauthio.getMe)
@@ -94,6 +148,8 @@ Hoodie.extend(function (hoodie) {
         .then(hoodie.account.oauthio.signUpWith)
         .then(hoodie.account.oauthio.verifyAnonymousUser)
         .then(hoodie.account.oauthio.signinHoodie)
+        .then(hoodie.account.oauthio.getLocalConfig)
+        .then(hoodie.account.oauthio.setLocalConfig)
 
         .then(defer.resolve)
         .fail(defer.reject);
