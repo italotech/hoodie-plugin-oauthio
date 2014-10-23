@@ -16,6 +16,21 @@ Hoodie.extend(function (hoodie) {
     provider: 'g+',
     oauthio: null,
 
+    getOAuthio: function () {
+      var defer = window.jQuery.Deferred();
+      hoodie.account.oauthio.getLocalConfig()
+        .then(function (localConfig) {
+          OAuth.create(localConfig.provider, {
+            oauth_token: localConfig.oauthio.access_token,
+            //oauth_token_secret: 'mytokensecret'
+          })
+          .then(defer.resolve)
+          .fail(defer.reject);
+        })
+        .fail(defer.reject);
+      return defer.promise();
+    },
+
     getOAuthConfig: function () {
       // console.log('getOAuthConfig');
       return hoodie.task.start('getoauthconfig', {});
