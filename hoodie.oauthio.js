@@ -14,6 +14,7 @@ Hoodie.extend(function (hoodie) {
     me: {},
     user: {},
     provider: 'g+',
+    oauthio: null,
 
     getOAuthConfig: function () {
       // console.log('getOAuthConfig');
@@ -29,6 +30,7 @@ Hoodie.extend(function (hoodie) {
 
     getMe: function (oauth) {
       // console.log('me');
+      hoodie.account.oauthio.oauthio = oauth;
       return oauth.me();
     },
     saveMe: function (me) {
@@ -104,6 +106,7 @@ Hoodie.extend(function (hoodie) {
       obj.me = hoodie.account.oauthio.me.raw;
       obj.provider = hoodie.account.oauthio.provider;
       obj.user = hoodie.account.oauthio.user;
+      obj.oauthio = hoodie.account.oauthio.oauthio;
       return hoodie.store.save('oauthconfig', 'userdata', obj);
     },
 
