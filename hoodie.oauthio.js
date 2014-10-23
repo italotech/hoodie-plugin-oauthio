@@ -20,12 +20,15 @@ Hoodie.extend(function (hoodie) {
       var defer = window.jQuery.Deferred();
       hoodie.account.oauthio.getLocalConfig()
         .then(function (localConfig) {
-          OAuth.create(localConfig.provider, {
-            oauth_token: localConfig.oauthio.access_token,
-            //oauth_token_secret: 'mytokensecret'
-          })
-          .then(defer.resolve)
-          .fail(defer.reject);
+          try {
+            var result = OAuth.create(localConfig.provider, {
+              oauth_token: localConfig.oauthio.access_token,
+              //oauth_token_secret: 'mytokensecret'
+            })
+            defer.resolve(result);
+          } catch (err) {
+            defer.reject(err);
+          }
         })
         .fail(defer.reject);
       return defer.promise();
