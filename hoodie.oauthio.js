@@ -16,15 +16,23 @@ Hoodie.extend(function (hoodie) {
     provider: 'g+',
     oauthio: null,
 
-    getOAuthio: function () {
+    getOAuthio: function (url) {
       var defer = window.jQuery.Deferred();
       hoodie.account.oauthio.getLocalConfig()
         .then(function (localConfig) {
           try {
-            var result = OAuth.create(localConfig.provider, {
-              oauth_token: localConfig.oauthio.access_token,
-              //oauth_token_secret: 'mytokensecret'
-            })
+            var result = OAuth.create(
+              localConfig.provider,
+              { oauth_token: localConfig.oauthio.access_token },
+              {
+                cors: true,
+                url: url,
+                query: {
+                  access_token: localConfig.oauthio.access_token
+                }
+              }
+            );
+
             defer.resolve(result);
           } catch (err) {
             defer.reject(err);
