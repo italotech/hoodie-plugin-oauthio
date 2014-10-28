@@ -116,6 +116,11 @@ Hoodie.extend(function (hoodie) {
       return defer.promise();
     },
 
+    updateSignUpWith: function (user) {
+      //console.log('updateSignUpWith', user);
+      return hoodie.task.start('updatesignupwith', {provider: hoodie.account.oauthio.provider, email: hoodie.account.username, hoodieId: hoodie.id()});
+    },
+
     getLocalConfig: function () {
       var defer = window.jQuery.Deferred();
       hoodie.store.find('oauthconfig', 'userdata')
@@ -177,6 +182,7 @@ Hoodie.extend(function (hoodie) {
         .then(hoodie.account.oauthio.signUpWith)
         .then(hoodie.account.oauthio.verifyAnonymousUser)
         .then(hoodie.account.oauthio.signinHoodie)
+        .then(hoodie.account.oauthio.updateSignUpWith)
         .then(hoodie.account.oauthio.getLocalConfig)
         .then(hoodie.account.oauthio.setLocalConfig)
 
