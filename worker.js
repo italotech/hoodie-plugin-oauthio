@@ -6,9 +6,17 @@ var OAuth = require('oauthio'),
     session = require('express-session'),
     async = require('async'),
     passwd = require('hoodie-plugin-users/lib/password_reset'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    debug = require('debug'),
+    log = debug('app:log'),
+    error = debug('app:error');
+    oauthio = require('./lib/oauthio');
+
+error.log = console.error.bind(console);
 
 module.exports = function (hoodie, callback) {
+
+
   var oauth_cofig = hoodie.config.get('oauthio_config');
   exports.pluginDb = hoodie.database(exports.dbname);
 
@@ -31,110 +39,16 @@ module.exports = function (hoodie, callback) {
     OAuth.initialize(oauth_cofig.settings.publicKey, oauth_cofig.settings.secretKey);
   }
 
-  hoodie.task.on('getoauthconfig:add', function (db, task) {
-    // console.log('getoauthconfig', task);
-
-    try {
-      oauth_cofig = hoodie.config.get('oauthio_config');
-      task.oAuthConfig = {
-        appKey: oauth_cofig.settings.publicKey,
-        oAuthdURL: oauth_cofig.settings.url
-      };
-      // console.log(task);
-      hoodie.task.success(db, task);
-    } catch (err) {
-      // console.log('auth try error', err);
-      hoodie.task.error(db, task, err);
-    }
-
-  });
-
-  hoodie.task.on('verifyuser:add', function (db, task) {
-
-    // console.log('verifyuser', task);
-    var doc = task.me.raw;
-    try {
-      exports.pluginDb.find(task.provider, doc.id, function (err, _doc) {
-        task.user = _doc;
-        if (err && err.error && err.error !== 'not_found') {
-          //console.login('err',arguments);
-          hoodie.task.error(db, task, err);
-        } else {
-//          console.log('verifyuser sucess',task);
-          hoodie.task.success(db, task);
-        }
-      });
-    } catch (err) {
-      // console.log('auth try error', err);
-      hoodie.task.error(db, task, err);
-    }
-  });
-
-  hoodie.task.on('signupwith:add', function (db, task) {
-
-    // console.log('signupwith', task);
-    var doc = task.me.raw;
-    try {
-      passwd.generatePassword(function (err, pass) {
-        if (err) {
-          hoodie.task.error(db, task, err);
-        }
-        doc.password = pass;
-        exports.pluginDb.add(task.provider, doc, function (err, _doc) {
-          task.user = doc;
-          task.user._rev = _doc.rev;
-          if (err && err.error && err.error !== 'not_found') {
-          //console.login('err',arguments);
-            hoodie.task.error(db, task, err);
-          } else {
-//            console.log('signupwith sucess', task);
-            hoodie.task.success(db, task);
-          }
-        });
-      });
-    } catch (err) {
-      // console.log('auth try error', err);
-      hoodie.task.error(db, task, err);
-    }
-  });
-
-  hoodie.task.on('updatesignupwith:add', function (db, task) {
-
-    // console.log('signupwith', task);
-    try {
-      exports.pluginDb.query('by_email', {key: task.email}, function (err, rows) {
-        if (err || !rows.length) hoodie.task.error(db, task, err);
-        exports.pluginDb.update(task.provider, rows[0].id.match(/([0-9]+)/)[1], { hoodieId: task.hoodieId }, function (err, _doc) {
-          if (err) {
-          //console.login('err',arguments);
-            hoodie.task.error(db, task, err);
-          } else {
-//            console.log('signupwith sucess', task);
-            hoodie.task.success(db, task);
-          }
-        });
-
-      });
-
-    } catch (err) {
-      // console.log('auth try error', err);
-      hoodie.task.error(db, task, err);
-    }
-  });
+  hoodie.task.on('getoauthconfig:add', oauthio(hoodie).getOauthConfig);
+  hoodie.task.on('verifyuser:add', oauthio(hoodie).verifyUser);
+  hoodie.task.on('signupwith:add', oauthio(hoodie).signUpWith);
+  hoodie.task.on('updatesignupwith:add', oauthio(hoodie).updateSignUpWith);
 
   // initialize the plugin
   async.series([
     async.apply(extendDb, hoodie),
     async.apply(exports.dbAdd, hoodie),
     async.apply(exports.dbIndex, hoodie),
-
-    // async.apply(hoodie.database(exports.dbname).addPermission,
-    //   'oauthio-user-writes',
-    //   exports.validate_doc_update
-    // ),
-    // async.apply(exports.ensureCreatorFilter, exports.dbname, hoodie),
-    // async.apply(hoodie.database(exports.dbname).grantPublicWriteAccess),
-    // async.apply(exports.catchUp, exports.dbname, hoodie)
   ],
   callback);
 
@@ -155,6 +69,25 @@ exports.dbAdd = function (hoodie, callback) {
   });
 
 };
+
+exports.dbIndex = function (hoodie, callback) {
+  var index = {
+        map: function (doc) {
+          if(doc.email) {
+            emit(doc.email, doc._id);
+          }
+        }
+      };
+
+  exports.pluginDb.addIndex('by_email', index, function (err, data) {
+    if (err) {
+      return callback(err);
+    }
+
+    return callback();
+  })
+};
+
 
 function extendDb(hoodie, cb) {
   var db = exports.pluginDb;
@@ -285,20 +218,3 @@ function extendDb(hoodie, cb) {
   return cb();
 };
 
-exports.dbIndex = function (hoodie, callback) {
-  var index = {
-        map: function (doc) {
-          if(doc.email) {
-            emit(doc.email, doc._id);
-          }
-        }
-      };
-
-  exports.pluginDb.addIndex('by_email', index, function (err, data) {
-    if (err) {
-      return callback(err);
-    }
-
-    return callback();
-  })
-};
