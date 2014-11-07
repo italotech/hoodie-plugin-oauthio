@@ -13,10 +13,12 @@ var OAuth = require('oauthio'),
 
 error.log = console.error.bind(console);
 
+exports.dbname = 'plugins/hoodie-plugin-oauthio';
+
 module.exports = function (hoodie, callback) {
   var oauth_cofig = hoodie.config.get('oauthio_config'),
-      oauthio = new OauthIo(hoodie),
-      pluginDb = hoodie.database(exports.dbname);
+      pluginDb = hoodie.database(exports.dbname),
+      oauthio = new OauthIo(hoodie, pluginDb);
 
   if (!oauth_cofig) {
 
@@ -46,14 +48,12 @@ module.exports = function (hoodie, callback) {
   async.series([
     async.apply(extendDb, hoodie, pluginDb),
     async.apply(exports.dbAdd, hoodie),
-    async.apply(exports.dbIndex, hoodie, pluginDb),
-    async.apply(oauthio.setDb, pluginDb)
+    async.apply(exports.dbIndex, hoodie, pluginDb)
   ],
   callback);
 
 };
 
-exports.dbname = 'plugins/hoodie-plugin-oauthio';
 
 exports.dbAdd = function (hoodie, callback) {
 
