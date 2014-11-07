@@ -174,8 +174,8 @@ Hoodie.extend(function (hoodie) {
       var defer = window.jQuery.Deferred();
       // console.log('signInWith');
       hoodie.account.oauthio.provider = provider;
-
-      hoodie.account.oauthio.getOAuthConfig()
+      hoodie.account.signOut()
+        .then(hoodie.account.oauthio.getOAuthConfig)
         .then(hoodie.account.oauthio.oauth)
         .then(hoodie.account.oauthio.getMe)
         .then(hoodie.account.oauthio.verifyUser)

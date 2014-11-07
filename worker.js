@@ -5,20 +5,18 @@
 var OAuth = require('oauthio'),
     session = require('express-session'),
     async = require('async'),
-    passwd = require('hoodie-plugin-users/lib/password_reset'),
     _ = require('lodash'),
     debug = require('debug'),
     log = debug('app:log'),
     error = debug('app:error');
-    oauthio = require('./lib/oauthio');
+    OauthIo = require('./lib/oauthio');
 
 error.log = console.error.bind(console);
 
 module.exports = function (hoodie, callback) {
-
-
-  var oauth_cofig = hoodie.config.get('oauthio_config');
-  exports.pluginDb = hoodie.database(exports.dbname);
+  var oauth_cofig = hoodie.config.get('oauthio_config'),
+      oauthio = new OauthIo(hoodie),
+      pluginDb = hoodie.database(exports.dbname);
 
   if (!oauth_cofig) {
 
@@ -39,16 +37,17 @@ module.exports = function (hoodie, callback) {
     OAuth.initialize(oauth_cofig.settings.publicKey, oauth_cofig.settings.secretKey);
   }
 
-  hoodie.task.on('getoauthconfig:add', oauthio(hoodie).getOauthConfig);
-  hoodie.task.on('verifyuser:add', oauthio(hoodie).verifyUser);
-  hoodie.task.on('signupwith:add', oauthio(hoodie).signUpWith);
-  hoodie.task.on('updatesignupwith:add', oauthio(hoodie).updateSignUpWith);
+  hoodie.task.on('getoauthconfig:add', oauthio.getOauthConfig);
+  hoodie.task.on('verifyuser:add', oauthio.verifyUser);
+  hoodie.task.on('signupwith:add', oauthio.signUpWith);
+  hoodie.task.on('updatesignupwith:add', oauthio.updateSignUpWith);
 
   // initialize the plugin
   async.series([
-    async.apply(extendDb, hoodie),
+    async.apply(extendDb, hoodie, pluginDb),
     async.apply(exports.dbAdd, hoodie),
-    async.apply(exports.dbIndex, hoodie),
+    async.apply(exports.dbIndex, hoodie, pluginDb),
+    async.apply(oauthio.setDb, pluginDb)
   ],
   callback);
 
@@ -70,7 +69,7 @@ exports.dbAdd = function (hoodie, callback) {
 
 };
 
-exports.dbIndex = function (hoodie, callback) {
+exports.dbIndex = function (hoodie, pluginDb, callback) {
   var index = {
         map: function (doc) {
           if(doc.email) {
@@ -79,7 +78,7 @@ exports.dbIndex = function (hoodie, callback) {
         }
       };
 
-  exports.pluginDb.addIndex('by_email', index, function (err, data) {
+  pluginDb.addIndex('by_email', index, function (err, data) {
     if (err) {
       return callback(err);
     }
@@ -89,8 +88,8 @@ exports.dbIndex = function (hoodie, callback) {
 };
 
 
-function extendDb(hoodie, cb) {
-  var db = exports.pluginDb;
+function extendDb(hoodie, pluginDb, cb) {
+  var db = pluginDb;
 /**
    * CouchDB views created using `db.addIndex()` are all stored in the same
    * design document: `_design/views`.
