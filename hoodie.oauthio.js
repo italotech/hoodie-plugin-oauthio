@@ -117,8 +117,11 @@ Hoodie.extend(function (hoodie) {
     },
 
     updateSignUpWith: function (user) {
-      //console.log('updateSignUpWith', user);
-      return hoodie.task.start('updatesignupwith', {provider: hoodie.account.oauthio.provider, email: hoodie.account.username, hoodieId: hoodie.id()});
+      var defer = window.jQuery.Deferred();
+      hoodie.task.start('updatesignupwith', {provider: hoodie.account.oauthio.provider, email: hoodie.account.username, hoodieId: hoodie.id()})
+        .then(defer.resolve)
+        .fail(defer.reject);
+      return defer.promise();
     },
 
     getLocalConfig: function () {
