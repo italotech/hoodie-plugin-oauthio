@@ -173,6 +173,13 @@ Hoodie.extend(function (hoodie) {
       return defer.promise();
     },
 
+    sendTrigger: function () {
+      var defer = window.jQuery.Deferred();
+      hoodie.trigger('signinoauthio', hoodie.account.username, hoodie.id());
+      defer.resolve();
+      return defer.promise();
+    },
+
     signInWith: function (provider, options) {
       var defer = window.jQuery.Deferred();
       // console.log('signInWith');
@@ -188,7 +195,8 @@ Hoodie.extend(function (hoodie) {
         .then(hoodie.account.oauthio.updateSignUpWith)
         .then(hoodie.account.oauthio.getLocalConfig)
         .then(hoodie.account.oauthio.setLocalConfig)
-
+        .then(hoodie.account.oauthio.sendTrigger)
+        
         .then(defer.resolve)
         .fail(defer.reject);
       return defer.promise();
