@@ -44,6 +44,7 @@ module.exports = function (hoodie, callback) {
   hoodie.task.on('signupwith:add', oauthio.signUpWith);
   hoodie.task.on('updatesignupwith:add', oauthio.updateSignUpWith);
 
+
   // initialize the plugin
   async.series([
     async.apply(extendDb, hoodie, pluginDb),
