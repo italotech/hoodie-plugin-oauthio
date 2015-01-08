@@ -40,8 +40,10 @@
     "debug": "^2.1.0",
     "express-session": "^1.7.6",
     "hoodie-plugin-users": "^2.1.3",
+    "hoodie-utils-plugins": "^0.1.2",
     "lodash": "^2.4.1",
-    "oauthio": "^0.2.1"
+    "oauthio": "^0.2.1",
+    "underscore": "^1.7.0"
   },
   "scripts": {
     "test": "grunt test"
