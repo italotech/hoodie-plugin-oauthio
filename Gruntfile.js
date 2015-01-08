@@ -123,8 +123,8 @@ module.exports = function (grunt) {
       removeData: {
         command: 'rm -rf ' + path.resolve(__dirname, 'data')
       },
-      removeEmails: {
-        command: 'rm -rf ' + path.resolve(__dirname, 'test/browser/emails')
+      setOauthData: {
+        command: './oauthio.sh'
       },
       npmLink: {
         command: 'npm link && npm link <%= pkg.name %>'
@@ -147,8 +147,8 @@ module.exports = function (grunt) {
       start: {
         options: {
           www: 'test/browser',
-          callback: function (config) {
-            grunt.config.set('connect.options.port', config.stack.www.port);
+          callback: function () {
+            grunt.config.set('connect.options.port', 6007);
           }
         }
       }
@@ -204,10 +204,10 @@ module.exports = function (grunt) {
   grunt.registerTask('test:browser', [
     'env:test',
     'shell:removeData',
-    'shell:removeEmails',
     'shell:npmLink',
     'shell:installPlugin',
     'hoodie',
+    'shell:setOauthData',
     'continueOn',
     'mocha_browser:all',
     'continueOff',
@@ -263,6 +263,7 @@ module.exports = function (grunt) {
     'shell:npmLink',
     'shell:installPlugin',
     'hoodie',
+    'shell:setOauthData',
     'continueOn',
   ]);
   grunt.registerTask('test:stop', [

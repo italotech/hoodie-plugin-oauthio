@@ -12,7 +12,7 @@ suite('network', function () {
       .done(function () {
         assert.equal(
           hoodie.account.username,
-          'hommer',
+          'gabriel.mancini@gmail.com',
           'should be logged in after signup'
         );
         done();
