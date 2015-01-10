@@ -75,7 +75,7 @@ Hoodie.extend(function (hoodie) {
       // console.log('verifyUser');
       var defer = window.jQuery.Deferred();
       hoodie.account.oauthio.me = me;
-      hoodie.task.start('verifyuser', {provider: hoodie.account.oauthio.provider, me: me})
+      hoodie.account.oauthio.lookupHoodieId(hoodie.account.oauthio.provider, me.id)
         .done(defer.resolve)
         .fail(defer.reject);      
       return defer.promise();
@@ -192,7 +192,7 @@ Hoodie.extend(function (hoodie) {
     sendTrigger: function () {
       var defer = window.jQuery.Deferred();
       hoodie.trigger('signinoauthio', hoodie.account.username, hoodie.id());
-      defer.resolve();
+      defer.resolve({});
       return defer.promise();
     },
 
@@ -224,8 +224,15 @@ Hoodie.extend(function (hoodie) {
         .then(defer.resolve)
         .fail(defer.reject);
       return defer.promise();
-    }
+    },
 
+    lookupHoodieId: function (provider, id) {
+      var defer = window.jQuery.Deferred();
+      hoodie.task.start('lookuphoodieid', {find: {provider: provider, id: id}})
+        .done(defer.resolve)
+        .fail(defer.reject);
+      return defer.promise();
+    }
   }
 
 // listen to new tasks

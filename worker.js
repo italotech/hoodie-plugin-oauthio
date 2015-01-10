@@ -42,10 +42,9 @@ module.exports = function (hoodie, callback) {
   }
 
   hoodie.task.on('getoauthconfig:add', oauthIo.getOauthConfig);
-  hoodie.task.on('verifyuser:add', oauthIo.verifyUser);
   hoodie.task.on('signupwith:add', oauthIo.signUpWith);
   hoodie.task.on('updatesignupwith:add', oauthIo.updateSignUpWith);
-
+  hoodie.task.on('lookuphoodieid:add', oauthIo.lookupHoodieId);
   callback();
 };
 
