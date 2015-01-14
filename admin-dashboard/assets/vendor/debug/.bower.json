@@ -1,0 +1,18 @@
+{
+  "name": "debug",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wixo/debug.git"
+  },
+  "homepage": "https://github.com/wixo/debug",
+  "_release": "89f1bc1e05",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "89f1bc1e057d6d04afe18473736db5cc3c86959b"
+  },
+  "_source": "git://github.com/wixo/debug.git",
+  "_target": "*",
+  "_originalSource": "debug",
+  "_direct": true
+}

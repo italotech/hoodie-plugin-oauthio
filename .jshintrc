@@ -8,7 +8,8 @@
     "before",
     "beforeEach",
     "root",
-    "emit"
+    "emit",
+    "window"
   ],
 
   "indent": 2,

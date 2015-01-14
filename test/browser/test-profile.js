@@ -4,8 +4,8 @@ suite('profiles', function () {
   suiteSetup(loadUsers);
 
 
-  test('signIn hommer', function (done) {
-    hoodie.account.signIn('Hommer', '123')
+  test('socialmedia.signIn hommer', function (done) {
+    hoodie.account.socialmedia.signIn('Hommer', '123')
       .fail(function (err) {
         done();
         assert.ok(false, err.message);

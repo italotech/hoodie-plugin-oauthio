@@ -95,7 +95,7 @@ module.exports = function (grunt) {
     jshint: {
       files: [
         'Gruntfile.js',
-        'hoodie.socialmedia.js',
+        'hoodie.oauthio.js',
         'index.js',
         'lib/*.js',
         'hooks/*.js'
