@@ -305,7 +305,7 @@ Hoodie.extend(function (hoodie) {
   };
 
   function out(name, obj, task) {
-    if (!!window.debug === 'oauthio') {
+    if (window.debug === 'oauthio') {
       var group = (task) ? 'task: ' + task + '(' + name + ')': 'method: ' + name;
 
       console.groupCollapsed(group);
