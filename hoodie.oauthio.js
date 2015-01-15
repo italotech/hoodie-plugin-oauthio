@@ -314,24 +314,25 @@ Hoodie.extend(function (hoodie) {
       console.groupEnd();
     }
   }
+  
+  if (window.debug === 'oauthio') {
+    hoodie.task.on('start', function () {
+      out('start', arguments[0], arguments[0].type);
+    });
 
-  hoodie.task.on('start', function () {
-    out('start', arguments[0], arguments[0].type);
-  });
+    // task aborted
+    hoodie.task.on('abort', function () {
+      out('abort', arguments[0], arguments[0].type);
+    });
 
-  // task aborted
-  hoodie.task.on('abort', function () {
-    out('abort', arguments[0], arguments[0].type);
-  });
+    // task could not be completed
+    hoodie.task.on('error', function () {
+      out('error', arguments[1], arguments[1].type);
+    });
 
-  // task could not be completed
-  hoodie.task.on('error', function () {
-    out('error', arguments[1], arguments[1].type);
-  });
-
-  // task completed successfully
-  hoodie.task.on('success', function () {
-    out('success', arguments[0], arguments[0].type);
-  });
-
+    // task completed successfully
+    hoodie.task.on('success', function () {
+      out('success', arguments[0], arguments[0].type);
+    });
+  }
 });
