@@ -7,8 +7,7 @@
  * Dependencies
  */
 var OauthIo = require('./lib'),
-  OAuth = require('oauthio'),
-  session = require('express-session');
+  OAuth = require('oauthio');
 
 
 /**
@@ -17,14 +16,10 @@ var OauthIo = require('./lib'),
 
 module.exports = function (hoodie, callback) {
   var oauthIo = new OauthIo(hoodie);
-
-  var oauth_cofig = hoodie.config.get('oauthio_config'),
-      pluginDb = hoodie.database(exports.dbname),
-      oauthio = new OauthIo(hoodie, pluginDb);
+  var oauth_cofig = hoodie.config.get('oauthio_config');
 
   if (!oauth_cofig) {
 
-    var session_object = session({secret: 'keyboard cat'});
     var default_oauthio_config = {
         'enabled': false,
         'settings': {
@@ -36,7 +31,7 @@ module.exports = function (hoodie, callback) {
 
     hoodie.config.set('oauthio_config', default_oauthio_config);
     oauth_cofig = hoodie.config.get('oauthio_config');
-    //OAuth.setOAuthdURL(oauth_cofig.settings.url, '/');
+
     OAuth.setOAuthdUrl(oauth_cofig.settings.url, '/');
     OAuth.initialize(oauth_cofig.settings.publicKey, oauth_cofig.settings.secretKey);
   }
@@ -45,6 +40,7 @@ module.exports = function (hoodie, callback) {
   hoodie.task.on('signupwith:add', oauthIo.signUpWith);
   hoodie.task.on('updatesignupwith:add', oauthIo.updateSignUpWith);
   hoodie.task.on('lookuphoodieid:add', oauthIo.lookupHoodieId);
+  
   callback();
 };
 
