@@ -292,14 +292,14 @@ Hoodie.extend(function (hoodie) {
 
   var debugPromisseGstart = function (text) {
     var defer = window.jQuery.Deferred();
-    window.debug && console.groupCollapsed(text);
+    (window.debug === 'oauthio') && console.groupCollapsed(text);
     defer.resolve({});
     return defer.promise();
   };
 
   var debugPromisseGend = function () {
     var defer = window.jQuery.Deferred();
-    window.debug && console.groupEnd();
+    (window.debug === 'oauthio') && console.groupEnd();
     defer.resolve({});
     return defer.promise();
   };
