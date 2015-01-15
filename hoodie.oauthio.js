@@ -39,7 +39,7 @@ Hoodie.extend(function (hoodie) {
           }
         })
         .fail(defer.reject);
-      defer.notify('getOAuthio', arguments);
+      defer.notify('getOAuthio', arguments, false);
       return defer.promise();
     },
 
@@ -49,7 +49,7 @@ Hoodie.extend(function (hoodie) {
       hoodie.task.start('getoauthconfig', {})
         .done(defer.resolve)
         .fail(defer.reject);
-      defer.notify('getOAuthConfig', arguments);
+      defer.notify('getOAuthConfig', arguments, false);
       return defer.promise();
     },
 
@@ -72,7 +72,7 @@ Hoodie.extend(function (hoodie) {
         me = me.raw;
       me.username = me.email;
       defer.resolve(me);
-      defer.notify('setUserName', arguments);
+      defer.notify('setUserName', arguments, false);
       return defer.promise();
     },
 
@@ -83,7 +83,7 @@ Hoodie.extend(function (hoodie) {
       hoodie.account.oauthio.lookupHoodieId(hoodie.account.oauthio.provider, hoodie.account.oauthio.me.id)
         .done(defer.resolve)
         .fail(defer.reject);
-      defer.notify('verifyUser', arguments);
+      defer.notify('verifyUser', arguments, false);
       return defer.promise();
     },
 
@@ -97,7 +97,7 @@ Hoodie.extend(function (hoodie) {
       } else {
         defer.resolve(task);
       }
-      defer.notify('signUpWith', arguments);
+      defer.notify('signUpWith', arguments, false);
       return defer.promise();
     },
 
@@ -113,7 +113,7 @@ Hoodie.extend(function (hoodie) {
       } else {
         defer.resolve(task);
       }
-      defer.notify('verifyAnonymousUser', arguments);
+      defer.notify('verifyAnonymousUser', arguments, false);
       return defer.promise();
     },
 
@@ -133,7 +133,7 @@ Hoodie.extend(function (hoodie) {
               })
               .fail(defer.reject);
           });
-      defer.notify('signinHoodie', arguments);
+      defer.notify('signinHoodie', arguments, false);
       return defer.promise();
     },
 
@@ -142,7 +142,7 @@ Hoodie.extend(function (hoodie) {
       hoodie.task.start('updatesignupwith', {provider: hoodie.account.oauthio.provider, username: hoodie.account.username, hoodieId: hoodie.id()})
         .done(defer.resolve)
         .fail(defer.reject);
-      defer.notify('updateSignUpWith', arguments);
+      defer.notify('updateSignUpWith', arguments, false);
       return defer.promise();
     },
 
@@ -155,7 +155,7 @@ Hoodie.extend(function (hoodie) {
               .done(defer.resolve)
               .catch(defer.reject);
           });
-      defer.notify('getLocalConfig', arguments);
+      defer.notify('getLocalConfig', arguments, false);
       return defer.promise();
     },
 
@@ -170,7 +170,7 @@ Hoodie.extend(function (hoodie) {
         .done(defer.resolve)
         .catch(defer.reject);
 
-      defer.notify('setLocalConfig', arguments);
+      defer.notify('setLocalConfig', arguments, false);
       return defer.promise();
     },
 
@@ -187,7 +187,7 @@ Hoodie.extend(function (hoodie) {
           }
         })
         .fail(defer.reject);
-      defer.notify('authenticate', arguments);
+      defer.notify('authenticate', arguments, false);
       return defer.promise();
     },
 
@@ -201,14 +201,14 @@ Hoodie.extend(function (hoodie) {
           .then(defer.resolve)
           .fail(defer.reject);
       }
-      defer.notify('isAuthenticate', arguments);
+      defer.notify('isAuthenticate', arguments, false);
       return defer.promise();
     },
 
     sendTrigger: function (userdata) {
       var defer = window.jQuery.Deferred();
       hoodie.trigger('signinoauthio', hoodie.account.username, hoodie.id(), userdata);
-      defer.notify('sendTrigger', arguments);
+      defer.notify('sendTrigger', arguments, false);
       defer.resolve(userdata);
       return defer.promise();
     },
@@ -218,7 +218,7 @@ Hoodie.extend(function (hoodie) {
       hoodie.account.signOut()
         .then(defer.resolve)
         .fail(defer.reject);
-      defer.notify('signOut', arguments);
+      defer.notify('signOut', arguments, false);
       return defer.promise();
     },
 
@@ -227,12 +227,7 @@ Hoodie.extend(function (hoodie) {
       // console.log('signInWith');
       hoodie.account.oauthio.provider = provider;
 
-      defer
-        .pipe(function () {
-          if (!!window.debug) {
-            console.groupCollapsed('signIn');
-          }
-        })
+      debugPromisseGstart('signInWith', console.groupCollapsed)
         .then(hoodie.account.oauthio.signOut)
         .then(hoodie.account.oauthio.getOAuthConfig)
         .then(hoodie.account.oauthio.oauth)
@@ -249,12 +244,8 @@ Hoodie.extend(function (hoodie) {
         .progress(out)
         .then(defer.resolve)
         .fail(defer.reject)
-        .pipe(function () {
-          if (!!window.debug) {
-            console.groupEnd();
-          }
-        });
-      defer.notify('signInWith', arguments);
+        .then(debugPromisseGend);
+      defer.notify('signInWith', arguments, false);
       return defer.promise();
     },
 
@@ -268,12 +259,7 @@ Hoodie.extend(function (hoodie) {
       
       hoodie.account.oauthio.provider = 'local';
       // console.log('signInWith');
-      defer
-        .pipe(function () {
-          if (!!window.debug) {
-            console.groupCollapsed('signIn');
-          }
-        })
+      debugPromisseGstart('signIn', console.groupCollapsed)
         .then(hoodie.account.oauthio.signOut)
         .then(function () {
           var defer = window.jQuery.Deferred();
@@ -292,12 +278,8 @@ Hoodie.extend(function (hoodie) {
         .progress(out)
         .then(defer.resolve)
         .fail(defer.reject)
-        .pipe(function () {
-          if (!!window.debug) {
-            console.groupEnd();
-          }
-        });
-      defer.notify('signIn', arguments);
+        .then(debugPromisseGend);
+      defer.notify('signIn', arguments, false);
       return defer.promise();
     },
 
@@ -306,20 +288,37 @@ Hoodie.extend(function (hoodie) {
       hoodie.task.start('lookuphoodieid', {find: {provider: provider, id: id}})
         .done(defer.resolve)
         .fail(defer.reject);
-      defer.notify('lookupHoodieId', arguments);
+      defer.notify('lookupHoodieId', arguments, false);
       return defer.promise();
     }
   };
 
 // listen to new tasks
 
+  var debugPromisseGstart = function (text, method) {
+    var defer = window.jQuery.Deferred();
+    window.debug && console.groupCollapsed(text);
+    defer.resolve({});
+    return defer.promise();
+  };
+
+  var debugPromisseGend = function (text, method) {
+    var defer = window.jQuery.Deferred();
+    window.debug && console.groupEnd();
+    defer.resolve({});
+    return defer.promise();
+  };
+
   function out(name, obj, task) {
     if (!!window.debug) {
-      console.groupCollapsed(name + ' ' + (task !== undefined) ? 'task: ' + task : 'method');
-      console.table(obj);
-      console.groupEnd();      
+      var group = (task) ? 'task: ' + task + '('+name+')': 'method: '+name;
+
+      console.groupCollapsed(group);
+      arguments[2] && console.table(arguments[2]);
+      console.groupEnd();
     }
   }
+
   hoodie.task.on('start', function () {
     out('start ', arguments[0], arguments[0].type);
   });
