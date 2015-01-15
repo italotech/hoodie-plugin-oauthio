@@ -18,6 +18,7 @@ Hoodie.extend(function (hoodie) {
 
     getOAuthio: function (url) {
       var defer = window.jQuery.Deferred();
+      defer.notify('getOAuthio', arguments, false);
       hoodie.account.oauthio.getLocalConfig()
         .then(function (localConfig) {
           try {
@@ -39,17 +40,16 @@ Hoodie.extend(function (hoodie) {
           }
         })
         .fail(defer.reject);
-      defer.notify('getOAuthio', arguments, false);
       return defer.promise();
     },
 
     getOAuthConfig: function () {
       // console.log('getOAuthConfig');
       var defer = window.jQuery.Deferred();
-      hoodie.task.start('getoauthconfig', {})
-        .done(defer.resolve)
-        .fail(defer.reject);
       defer.notify('getOAuthConfig', arguments, false);
+      hoodie.task.start('getoauthconfig', {})
+        .then(defer.resolve)
+        .fail(defer.reject);
       return defer.promise();
     },
 
@@ -68,42 +68,44 @@ Hoodie.extend(function (hoodie) {
 
     setUserName: function (me) {
       var defer = window.jQuery.Deferred();
+      defer.notify('setUserName', arguments, false);
       if (!!me.raw)
         me = me.raw;
       me.username = me.email;
       defer.resolve(me);
-      defer.notify('setUserName', arguments, false);
       return defer.promise();
     },
 
     verifyUser: function (me) {
-      // console.log('verifyUser');
       var defer = window.jQuery.Deferred();
+      defer.notify('verifyUser', arguments, false);
       hoodie.account.oauthio.me = me;
       hoodie.account.oauthio.lookupHoodieId(hoodie.account.oauthio.provider, hoodie.account.oauthio.me.id)
-        .done(defer.resolve)
+        .then(function (task) {
+          if (task.user)
+            hoodie.account.oauthio.me = task.user;
+          defer.resolve(task);
+        })
         .fail(defer.reject);
-      defer.notify('verifyUser', arguments, false);
       return defer.promise();
     },
 
     signUpWith: function (task) {
       var defer = window.jQuery.Deferred();
-      // console.log('signUpWith');
+      defer.notify('signUpWith', arguments, false);
       if (!task.user) {
         hoodie.task.start('signupwith', {provider: hoodie.account.oauthio.provider, me: hoodie.account.oauthio.me})
-          .done(defer.resolve)
+          .then(defer.resolve)
           .fail(defer.reject);
       } else {
         defer.resolve(task);
       }
-      defer.notify('signUpWith', arguments, false);
       return defer.promise();
     },
 
     verifyAnonymousUser: function (task) {
       var defer = window.jQuery.Deferred();
-      // console.log('verifyAnonymousUser');
+      defer.notify('verifyAnonymousUser', arguments, false);
       if (hoodie.account.hasAnonymousAccount()) {
         hoodie.account.destroy()
           .then(function () {
@@ -113,73 +115,72 @@ Hoodie.extend(function (hoodie) {
       } else {
         defer.resolve(task);
       }
-      defer.notify('verifyAnonymousUser', arguments, false);
       return defer.promise();
     },
 
     signinHoodie: function (task) {
       var defer = window.jQuery.Deferred();
-      // console.log('signinHoodie');
+      defer.notify('signinHoodie', arguments, false);
       hoodie.account.oauthio.user.username = task.user.username;
       hoodie.account.oauthio.user.password = task.user.password;
       hoodie.account.signIn(task.user.username, task.user.password, { moveData : true })
-          .done(defer.resolve)
+          .then(defer.resolve)
           .fail(function () {
             hoodie.account.signUp(task.user.username, task.user.password)
-              .done(function () {
+              .then(function () {
                 hoodie.account.signIn(task.user.username, task.user.password, { moveData : true })
                   .then(defer.resolve)
                   .fail(defer.reject);
               })
               .fail(defer.reject);
           });
-      defer.notify('signinHoodie', arguments, false);
       return defer.promise();
     },
 
     updateSignUpWith: function () {
       var defer = window.jQuery.Deferred();
-      hoodie.task.start('updatesignupwith', {provider: hoodie.account.oauthio.provider, username: hoodie.account.username, hoodieId: hoodie.id()})
-        .done(defer.resolve)
-        .fail(defer.reject);
       defer.notify('updateSignUpWith', arguments, false);
+      hoodie.task.start('updatesignupwith', {provider: hoodie.account.oauthio.provider, username: hoodie.account.username, hoodieId: hoodie.id()})
+        .then(defer.resolve)
+        .fail(defer.reject);
       return defer.promise();
     },
 
     getLocalConfig: function () {
       var defer = window.jQuery.Deferred();
-      hoodie.store.find('oauthconfig', 'userdata')
-        .done(defer.resolve)
-        .catch(function () {
-            hoodie.store.add('oauthconfig', { id: 'userdata' })
-              .done(defer.resolve)
-              .catch(defer.reject);
-          });
       defer.notify('getLocalConfig', arguments, false);
+      hoodie.store.find('oauthconfig', 'userdata')
+        .then(defer.resolve)
+        .fail(function () {
+            hoodie.store.add('oauthconfig', { id: 'userdata' })
+              .then(defer.resolve)
+              .fail(defer.reject);
+          });
       return defer.promise();
     },
 
     setLocalConfig: function (obj) {
       var defer = window.jQuery.Deferred();
+      defer.notify('setLocalConfig', arguments, false);
 
       obj.me = hoodie.account.oauthio.me;
       obj.provider = hoodie.account.oauthio.provider;
       obj.user = hoodie.account.oauthio.user;
       obj.oauthio = hoodie.account.oauthio.oauthio;
       hoodie.store.save('oauthconfig', 'userdata', obj)
-        .done(defer.resolve)
-        .catch(defer.reject);
+        .then(defer.resolve)
+        .fail(defer.reject);
 
-      defer.notify('setLocalConfig', arguments, false);
       return defer.promise();
     },
 
     authenticate: function () {
       var defer = window.jQuery.Deferred();
+      defer.notify('authenticate', arguments, false);
       hoodie.account.oauthio.getLocalConfig()
         .then(function (oauthconfig) {
           if (oauthconfig.user) {
-            hoodie.account.signIn(oauthconfig.user.username, oauthconfig.user.password, { moveData : true })
+            hoodie.account.signIn(oauthconfig.user.username, oauthconfig.user.password)
               .then(defer.resolve)
               .fail(defer.reject);
           } else {
@@ -187,12 +188,12 @@ Hoodie.extend(function (hoodie) {
           }
         })
         .fail(defer.reject);
-      defer.notify('authenticate', arguments, false);
       return defer.promise();
     },
 
     isAuthenticate: function () {
       var defer = window.jQuery.Deferred();
+      defer.notify('isAuthenticate', arguments, false);
       if (hoodie.account.username) {
         defer.resolve({});
       } else {
@@ -201,24 +202,32 @@ Hoodie.extend(function (hoodie) {
           .then(defer.resolve)
           .fail(defer.reject);
       }
-      defer.notify('isAuthenticate', arguments, false);
       return defer.promise();
     },
 
     sendTrigger: function (userdata) {
       var defer = window.jQuery.Deferred();
-      hoodie.trigger('signinoauthio', hoodie.account.username, hoodie.id(), userdata);
       defer.notify('sendTrigger', arguments, false);
-      defer.resolve(userdata);
+      hoodie.trigger('signinoauthio', hoodie.account.username, hoodie.id(), userdata);
+      defer.resolve(hoodie.account.username, hoodie.id(), userdata);
       return defer.promise();
     },
 
     signOut: function () {
       var defer = window.jQuery.Deferred();
+      defer.notify('signOut', arguments, false);
       hoodie.account.signOut()
         .then(defer.resolve)
         .fail(defer.reject);
-      defer.notify('signOut', arguments, false);
+      return defer.promise();
+    },
+
+    lookupHoodieId: function (provider, id) {
+      var defer = window.jQuery.Deferred();
+      defer.notify('lookupHoodieId', arguments, false);
+      hoodie.task.start('lookuphoodieid', {find: {provider: provider, id: id}})
+        .then(defer.resolve)
+        .fail(defer.reject);
       return defer.promise();
     },
 
@@ -228,7 +237,6 @@ Hoodie.extend(function (hoodie) {
       hoodie.account.oauthio.provider = provider;
 
       debugPromisseGstart('signInWith', console.groupCollapsed)
-        .then(hoodie.account.oauthio.signOut)
         .then(hoodie.account.oauthio.getOAuthConfig)
         .then(hoodie.account.oauthio.oauth)
         .then(hoodie.account.oauthio.getMe)
@@ -241,10 +249,10 @@ Hoodie.extend(function (hoodie) {
         .then(hoodie.account.oauthio.getLocalConfig)
         .then(hoodie.account.oauthio.setLocalConfig)
         .then(hoodie.account.oauthio.sendTrigger)
+        .then(debugPromisseGend)
         .progress(out)
         .then(defer.resolve)
-        .fail(defer.reject)
-        .then(debugPromisseGend);
+        .fail(defer.reject);
       defer.notify('signInWith', arguments, false);
       return defer.promise();
     },
@@ -260,13 +268,8 @@ Hoodie.extend(function (hoodie) {
       hoodie.account.oauthio.provider = 'local';
       // console.log('signInWith');
       debugPromisseGstart('signIn', console.groupCollapsed)
-        .then(hoodie.account.oauthio.signOut)
         .then(function () {
-          var defer = window.jQuery.Deferred();
-          hoodie.account.oauthio.verifyUser(me)
-            .then(defer.resolve)
-            .fail(defer.reject);
-          return defer.promise();
+          return hoodie.account.oauthio.verifyUser(me);
         })
         .then(hoodie.account.oauthio.signUpWith)
         .then(hoodie.account.oauthio.verifyAnonymousUser)
@@ -275,34 +278,26 @@ Hoodie.extend(function (hoodie) {
         .then(hoodie.account.oauthio.getLocalConfig)
         .then(hoodie.account.oauthio.setLocalConfig)
         .then(hoodie.account.oauthio.sendTrigger)
+        .then(debugPromisseGend)
         .progress(out)
         .then(defer.resolve)
-        .fail(defer.reject)
-        .then(debugPromisseGend);
+        .fail(defer.reject);
       defer.notify('signIn', arguments, false);
       return defer.promise();
     },
 
-    lookupHoodieId: function (provider, id) {
-      var defer = window.jQuery.Deferred();
-      hoodie.task.start('lookuphoodieid', {find: {provider: provider, id: id}})
-        .done(defer.resolve)
-        .fail(defer.reject);
-      defer.notify('lookupHoodieId', arguments, false);
-      return defer.promise();
-    }
   };
 
 // listen to new tasks
 
-  var debugPromisseGstart = function (text, method) {
+  var debugPromisseGstart = function (text) {
     var defer = window.jQuery.Deferred();
     window.debug && console.groupCollapsed(text);
     defer.resolve({});
     return defer.promise();
   };
 
-  var debugPromisseGend = function (text, method) {
+  var debugPromisseGend = function () {
     var defer = window.jQuery.Deferred();
     window.debug && console.groupEnd();
     defer.resolve({});
@@ -311,26 +306,27 @@ Hoodie.extend(function (hoodie) {
 
   function out(name, obj, task) {
     if (!!window.debug) {
-      var group = (task) ? 'task: ' + task + '('+name+')': 'method: '+name;
+      var group = (task) ? 'task: ' + task + '(' + name + ')': 'method: ' + name;
 
       console.groupCollapsed(group);
-      arguments[2] && console.table(arguments[2]);
+      if (!!obj)
+        console.table(obj);
       console.groupEnd();
     }
   }
 
   hoodie.task.on('start', function () {
-    out('start ', arguments[0], arguments[0].type);
+    out('start', arguments[0], arguments[0].type);
   });
 
   // task aborted
   hoodie.task.on('abort', function () {
-    out('abort ', arguments[0], arguments[0].type);
+    out('abort', arguments[0], arguments[0].type);
   });
 
   // task could not be completed
   hoodie.task.on('error', function () {
-    out('error ', arguments[1], arguments[1].type);
+    out('error', arguments[1], arguments[1].type);
   });
 
   // task completed successfully
