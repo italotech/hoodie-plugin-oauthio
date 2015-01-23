@@ -1,6 +1,6 @@
 {
   "name": "hoodie-plugin-oauthio",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "description": "OAuthio Hoodie plugin",
   "main": "worker.js",
   "devDependencies": {
@@ -39,6 +39,14 @@
     ],
     "hoodiejs": "node_modules/hoodie/src/hoodie.js"
   },
+  "keywords": [
+    "hoodie",
+    "oauth",
+    "oauth.io",
+    "oauthio",
+    "goappes",
+    "plugin"
+  ],
   "dependencies": {
     "async": "^0.9.0",
     "debug": "^2.1.0",
